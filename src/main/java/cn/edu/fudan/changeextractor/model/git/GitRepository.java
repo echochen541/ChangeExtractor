@@ -31,20 +31,20 @@ public class GitRepository {
 	 * @Description: local repository path
 	 */
 	private String repositoryPath;
-	
-	/** 
+
+	/**
 	 * @Title:GitRepository
-	 * @Description:constructor  
+	 * @Description:constructor
 	 */
 	public GitRepository() {
 	}
 
-	/** 
+	/**
 	 * @Title:GitRepository
 	 * @Description:constructor
 	 * @param repositoryId
 	 * @param repositoryName
-	 * @param repositoryPath 
+	 * @param repositoryPath
 	 */
 	public GitRepository(int repositoryId, String repositoryName, String repositoryPath) {
 		this.repositoryId = repositoryId;
@@ -60,7 +60,8 @@ public class GitRepository {
 	}
 
 	/**
-	 * @param repositoryId the repositoryId to set
+	 * @param repositoryId
+	 *            the repositoryId to set
 	 */
 	public void setRepositoryId(int repositoryId) {
 		this.repositoryId = repositoryId;
@@ -74,7 +75,8 @@ public class GitRepository {
 	}
 
 	/**
-	 * @param repositoryName the repositoryName to set
+	 * @param repositoryName
+	 *            the repositoryName to set
 	 */
 	public void setRepositoryName(String repositoryName) {
 		this.repositoryName = repositoryName;
@@ -88,7 +90,8 @@ public class GitRepository {
 	}
 
 	/**
-	 * @param repositoryPath the repositoryPath to set
+	 * @param repositoryPath
+	 *            the repositoryPath to set
 	 */
 	public void setRepositoryPath(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
