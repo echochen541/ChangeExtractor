@@ -6,12 +6,19 @@
  */
 package cn.edu.fudan.changeextractor.controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
+import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
+import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import cn.edu.fudan.changeextractor.extractor.git.GitExtractor;
 import cn.edu.fudan.changeextractor.model.git.GitCommit;
 import cn.edu.fudan.changeextractor.model.git.GitRepository;
+import cn.edu.fudan.changeextractor.utils.FileUtils;
 
 /**
  * @ClassName: ChangeExtractor
@@ -50,6 +57,9 @@ public class ChangeExtractor {
 
 		GitExtractor gitExtractor = new GitExtractor(gitRepository.getRepositoryPath());
 
+		String userDir = System.getProperty("user.dir");
+		String tempDir = userDir + "/temp/" + gitRepository.getRepositoryName();
+		
 		for (GitCommit gitCommit : commitList) {
 			String parentCommitId = gitCommit.getparentCommitId();
 			String commitId = gitCommit.getCommitId();
@@ -58,9 +68,44 @@ public class ChangeExtractor {
 				System.out.println(filePath);
 				byte[] content1 = gitExtractor.getFileContentByCommitId(parentCommitId, filePath);
 				byte[] content2 = gitExtractor.getFileContentByCommitId(commitId, filePath);
-				System.out.println(new String(content1));
-				System.out.println(new String(content2));
-				
+				String randomString = UUID.randomUUID().toString();
+				File left = FileUtils.writeBytesToFile(content1, tempDir, randomString + ".v1");
+				File right = FileUtils.writeBytesToFile(content2, tempDir, randomString + ".v2");
+
+				FileDistiller distiller = ChangeDistiller.createFileDistiller(Language.JAVA);
+				try {
+					distiller.extractClassifiedSourceCodeChanges(left, right);
+				} catch (Exception e) {
+					/*
+					 * An exception most likely indicates a bug in ChangeDistiller.
+					 * Please file a bug report at
+					 * https://bitbucket.org/sealuzh/tools-changedistiller/issues and
+					 * attach the full stack trace along with the two files that you
+					 * tried to distill.
+					 */
+					System.err.println("Warning: error while change distilling. " + e.getMessage());
+				}
+
+				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
+				if (changes != null) {
+					for (SourceCodeChange change : changes) {
+						// Structure entity in which the change operation happened,
+						// e.g., attribute, class, or method
+						System.out.println("root entity type: " + change.getRootEntity().getType());
+						System.out.println("root entity: " + change.getRootEntity());
+						// Source code entity that becomes the parent entity when the
+						// change is applied.
+						System.out.println("parent entity: " + change.getParentEntity());
+						// Change Type
+						System.out.println("change type: " + change.getChangeType());
+						// c of the source code change
+						System.out.println("significance level: " + change.getSignificanceLevel());
+						// Source code entity has been changed
+						System.out.println("changed entity: " + change.getChangedEntity());
+						System.out.println();
+					}
+				}
+
 			}
 		}
 	}

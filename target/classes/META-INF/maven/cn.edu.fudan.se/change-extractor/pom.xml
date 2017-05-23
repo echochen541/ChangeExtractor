@@ -57,5 +57,12 @@
 			<artifactId>org.eclipse.jgit.junit</artifactId>
 			<version>4.7.0.201704051617-r</version>
 		</dependency>
+
+		<!-- changedistiller -->
+		<dependency>
+			<groupId>ch.uzh.ifi.seal</groupId>
+			<artifactId>changedistiller</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>
