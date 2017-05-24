@@ -15,6 +15,7 @@ import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
 import cn.edu.fudan.changeextractor.extractor.git.GitExtractor;
 import cn.edu.fudan.changeextractor.model.git.GitCommit;
 import cn.edu.fudan.changeextractor.model.git.GitRepository;
@@ -65,12 +66,12 @@ public class ChangeExtractor {
 		// create temp directory to store files to be extracted
 		String userDirPath = System.getProperty("user.dir");
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
-		File dir = new File(tempDirPath);
-		while (dir.exists()) {
+		File tempDir = new File(tempDirPath);
+		while (tempDir.exists()) {
 			tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
-			dir = new File(tempDirPath);
+			tempDir = new File(tempDirPath);
 		}
-		dir.mkdirs();
+		tempDir.mkdirs();
 
 		for (GitCommit gitCommit : commitList) {
 			String parentCommitId = gitCommit.getparentCommitId();
@@ -117,19 +118,29 @@ public class ChangeExtractor {
 						System.out.println("parent entity: " + change.getParentEntity());
 						// Change Type
 						System.out.println("change type: " + change.getChangeType());
-						// c of the source code change
+						// Significance level of the source code change
 						System.out.println("significance level: " + change.getSignificanceLevel());
 						// Source code entity has been changed
 						System.out.println("changed entity: " + change.getChangedEntity());
+						// Associate entities
+						// List<SourceCodeEntity> entities =
+						// change.getChangedEntity().getAssociatedEntities();
+						// if (entities.size() > 0) {
+						// System.out.println("associate entities :");
+						// for (SourceCodeEntity entity : entities) {
+						// System.out.println(entity);
+						// }
+						// }
 						System.out.println();
 					}
 				}
+				System.out.println();
 			}
 		}
 		// delete temp directory
-		dir.delete();
+		tempDir.delete();
 	}
-	
+
 	private GitRepository repository;
 	private List<GitCommit> commitList;
 
@@ -167,18 +178,18 @@ public class ChangeExtractor {
 		this.commitList = commitList;
 	}
 
-	/** 
+	/**
 	 * @Title:ChangeExtractor
-	 * @Description:TODO  
+	 * @Description:TODO
 	 */
 	public ChangeExtractor() {
 	}
 
-	/** 
+	/**
 	 * @Title:ChangeExtractor
-	 * @Description:TODO 
+	 * @Description:TODO
 	 * @param repository
-	 * @param commitList 
+	 * @param commitList
 	 */
 	public ChangeExtractor(GitRepository repository, List<GitCommit> commitList) {
 		this.repository = repository;
