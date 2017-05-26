@@ -4,7 +4,7 @@
  * @author: echo   
  * @date: May 23, 2017 5:04:48 PM 
  */
-package cn.edu.fudan.changeextractor.utils;
+package cn.edu.fudan.changeextractor.util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;

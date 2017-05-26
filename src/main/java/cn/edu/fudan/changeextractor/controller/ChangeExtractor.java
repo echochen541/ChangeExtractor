@@ -7,26 +7,20 @@
 package cn.edu.fudan.changeextractor.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
-import cn.edu.fudan.changeextractor.dao.ChangeOperationMapper;
+import cn.edu.fudan.changeextractor.dao.ChangeOperationDAO;
 import cn.edu.fudan.changeextractor.extractor.git.GitExtractor;
 import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
 import cn.edu.fudan.changeextractor.model.git.GitCommit;
 import cn.edu.fudan.changeextractor.model.git.GitRepository;
-import cn.edu.fudan.changeextractor.utils.FileUtils;
+import cn.edu.fudan.changeextractor.util.FileUtils;
 
 /**
  * @ClassName: ChangeExtractor
@@ -35,38 +29,6 @@ import cn.edu.fudan.changeextractor.utils.FileUtils;
  * @date: May 23, 2017 3:57:14 PM
  */
 public class ChangeExtractor {
-	/**
-	 * @Title: main
-	 * @Description: TODO
-	 * @param args
-	 * @return: void
-	 */
-	public static void main(String[] args) {
-		// input repository and commits
-		GitRepository gitRepository = new GitRepository(738, "weiciyuan", "D:/echo/workspace/git/big-code/weiciyuan");
-		List<GitCommit> commitList = new ArrayList<GitCommit>();
-		List<String> filePathList = new ArrayList<String>();
-
-		filePathList.add("src/org/qii/weiciyuan/support/lib/sinasso/SsoHandler.java");
-		commitList.add(new GitCommit("b8f4de854b12c4160a850c2217c779609c5eb445",
-				"733ac4f71adfd05f390fbe13d98b02875105b31c", new ArrayList<String>(filePathList)));
-
-		filePathList.clear();
-		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
-		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoActivity.java");
-		commitList.add(new GitCommit("90cc081f75458bb13a57ea0cde968331b2482284",
-				"0cc93ab7919af0468e83ead8122118fabdccbb73", new ArrayList<String>(filePathList)));
-
-		filePathList.clear();
-		filePathList.add("src/org/qii/weiciyuan/support/lib/BlurImageView.java");
-		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
-		commitList.add(new GitCommit("a4d53c57f88643f9c5d773d647d837b01fcbad21",
-				"739e934e4a257a35b82b0ad54131b59daa7ab39a", new ArrayList<String>(filePathList)));
-
-		ChangeExtractor changeExtractor = new ChangeExtractor(gitRepository, commitList);
-		changeExtractor.extracChange();
-	}
-
 	public void extracChange() {
 		GitExtractor gitExtractor = new GitExtractor(repository.getRepositoryPath());
 
@@ -79,9 +41,9 @@ public class ChangeExtractor {
 		for (GitCommit gitCommit : commitList) {
 			String parentCommitId = gitCommit.getparentCommitId();
 			String commitId = gitCommit.getCommitId();
-			System.out.println(commitId);
+			// System.out.println(commitId);
 			for (String filePath : gitCommit.getFilePathList()) {
-				System.out.println(filePath);
+				// System.out.println(filePath);
 				byte[] content1 = gitExtractor.getFileContentByCommitId(parentCommitId, filePath);
 				byte[] content2 = gitExtractor.getFileContentByCommitId(commitId, filePath);
 				String randomString = UUID.randomUUID().toString();
@@ -93,53 +55,34 @@ public class ChangeExtractor {
 				try {
 					distiller.extractClassifiedSourceCodeChanges(left, right);
 				} catch (Exception e) {
-					/*
-					 * An exception most likely indicates a bug in
-					 * ChangeDistiller. Please file a bug report at
-					 * https://bitbucket.org/sealuzh/tools-changedistiller/
-					 * issues and attach the full stack trace along with the two
-					 * files that you tried to distill.
-					 */
 					System.err.println("Warning: error while change distilling. " + e.getMessage());
 				}
+				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
+				insertChanges(changes, commitId, filePath);
 
 				// delete temp files
 				left.delete();
 				right.delete();
-
-				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
-				if (changes != null) {
-					for (SourceCodeChange change : changes) {
-						System.out.println();
-						ChangeOperation operation = new ChangeOperation(repository.getRepositoryId(), commitId,
-								filePath, change.getRootEntity().getType().toString(),
-								change.getRootEntity().getUniqueName().toString(),
-								change.getParentEntity().getType().toString(),
-								change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
-								change.getSignificanceLevel().toString(),
-								change.getChangedEntity().getType().toString(),
-								change.getChangedEntity().getUniqueName().toString());
-
-						SqlSessionFactory sessionFactory;
-						try {
-							sessionFactory = new SqlSessionFactoryBuilder()
-									.build(Resources.getResourceAsReader("mybatis-config.xml"));
-							SqlSession sqlSession = sessionFactory.openSession();
-							ChangeOperationMapper changeMapper = sqlSession.getMapper(ChangeOperationMapper.class);
-							changeMapper.insert(operation);
-							sqlSession.commit();
-							System.out.println(operation);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				}
-				System.out.println();
 			}
 		}
 		// delete temp directory
 		tempDir.delete();
+	}
+
+	public void insertChanges(List<SourceCodeChange> changes, String commitId, String filePath) {
+		if (changes != null) {
+			for (SourceCodeChange change : changes) {
+				System.out.println();
+				ChangeOperation operation = new ChangeOperation(repository.getRepositoryId(), commitId, filePath,
+						change.getRootEntity().getType().toString(), change.getRootEntity().getUniqueName().toString(),
+						change.getParentEntity().getType().toString(),
+						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
+						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
+						change.getChangedEntity().getUniqueName().toString());
+				ChangeOperationDAO.insertChangeOperation(operation);
+			}
+		}
+		// System.out.println();
 	}
 
 	private GitRepository repository;
@@ -195,5 +138,37 @@ public class ChangeExtractor {
 	public ChangeExtractor(GitRepository repository, List<GitCommit> commitList) {
 		this.repository = repository;
 		this.commitList = commitList;
+	}
+
+	/**
+	 * @Title: main
+	 * @Description: TODO
+	 * @param args
+	 * @return: void
+	 */
+	public static void main(String[] args) {
+		// input repository and commits
+		GitRepository gitRepository = new GitRepository(738, "weiciyuan", "D:/echo/workspace/git/big-code/weiciyuan");
+		List<GitCommit> commitList = new ArrayList<GitCommit>();
+		List<String> filePathList = new ArrayList<String>();
+
+		filePathList.add("src/org/qii/weiciyuan/support/lib/sinasso/SsoHandler.java");
+		commitList.add(new GitCommit("b8f4de854b12c4160a850c2217c779609c5eb445",
+				"733ac4f71adfd05f390fbe13d98b02875105b31c", new ArrayList<String>(filePathList)));
+
+		filePathList.clear();
+		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
+		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoActivity.java");
+		commitList.add(new GitCommit("90cc081f75458bb13a57ea0cde968331b2482284",
+				"0cc93ab7919af0468e83ead8122118fabdccbb73", new ArrayList<String>(filePathList)));
+
+		filePathList.clear();
+		filePathList.add("src/org/qii/weiciyuan/support/lib/BlurImageView.java");
+		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
+		commitList.add(new GitCommit("a4d53c57f88643f9c5d773d647d837b01fcbad21",
+				"739e934e4a257a35b82b0ad54131b59daa7ab39a", new ArrayList<String>(filePathList)));
+
+		ChangeExtractor changeExtractor = new ChangeExtractor(gitRepository, commitList);
+		changeExtractor.extracChange();
 	}
 }
