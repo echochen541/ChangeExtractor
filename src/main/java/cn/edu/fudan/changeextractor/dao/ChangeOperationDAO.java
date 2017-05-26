@@ -7,12 +7,14 @@
 package cn.edu.fudan.changeextractor.dao;
 
 import java.io.Reader;
+import java.util.List;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
+import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
 
 /**
@@ -38,6 +40,22 @@ public class ChangeOperationDAO {
 		ChangeOperationMapper changeMapper = sqlSession.getMapper(ChangeOperationMapper.class);
 		changeMapper.insert(changeOperation);
 		sqlSession.commit();
-		System.out.println(changeOperation);
+		// System.out.println(changeOperation);
+	}
+
+	public static void insertChanges(List<SourceCodeChange> changes, int repositoryId, String commitId,
+			String filePath) {
+		if (changes != null) {
+			for (SourceCodeChange change : changes) {
+				// System.out.println();
+				ChangeOperation operation = new ChangeOperation(repositoryId, commitId, filePath,
+						change.getRootEntity().getType().toString(), change.getRootEntity().getUniqueName().toString(),
+						change.getParentEntity().getType().toString(),
+						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
+						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
+						change.getChangedEntity().getUniqueName().toString());
+				ChangeOperationDAO.insertChangeOperation(operation);
+			}
+		}
 	}
 }

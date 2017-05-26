@@ -17,7 +17,6 @@ import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
 import cn.edu.fudan.changeextractor.dao.ChangeOperationDAO;
 import cn.edu.fudan.changeextractor.extractor.git.GitExtractor;
-import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
 import cn.edu.fudan.changeextractor.model.git.GitCommit;
 import cn.edu.fudan.changeextractor.model.git.GitRepository;
 import cn.edu.fudan.changeextractor.util.FileUtils;
@@ -30,6 +29,9 @@ import cn.edu.fudan.changeextractor.util.FileUtils;
  */
 public class ChangeExtractor {
 	public void extracChange() {
+		int repositoryId = repository.getRepositoryId();
+		System.out.println(repositoryId);
+
 		GitExtractor gitExtractor = new GitExtractor(repository.getRepositoryPath());
 
 		// create temp directory to store files to be extracted
@@ -41,9 +43,9 @@ public class ChangeExtractor {
 		for (GitCommit gitCommit : commitList) {
 			String parentCommitId = gitCommit.getparentCommitId();
 			String commitId = gitCommit.getCommitId();
-			// System.out.println(commitId);
+			System.out.println(commitId);
 			for (String filePath : gitCommit.getFilePathList()) {
-				// System.out.println(filePath);
+				System.out.println(filePath);
 				byte[] content1 = gitExtractor.getFileContentByCommitId(parentCommitId, filePath);
 				byte[] content2 = gitExtractor.getFileContentByCommitId(commitId, filePath);
 				String randomString = UUID.randomUUID().toString();
@@ -58,31 +60,16 @@ public class ChangeExtractor {
 					System.err.println("Warning: error while change distilling. " + e.getMessage());
 				}
 				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
-				insertChanges(changes, commitId, filePath);
+				ChangeOperationDAO.insertChanges(changes, repository.getRepositoryId(), commitId, filePath);
 
 				// delete temp files
 				left.delete();
 				right.delete();
 			}
+			System.out.println();
 		}
 		// delete temp directory
 		tempDir.delete();
-	}
-
-	public void insertChanges(List<SourceCodeChange> changes, String commitId, String filePath) {
-		if (changes != null) {
-			for (SourceCodeChange change : changes) {
-				System.out.println();
-				ChangeOperation operation = new ChangeOperation(repository.getRepositoryId(), commitId, filePath,
-						change.getRootEntity().getType().toString(), change.getRootEntity().getUniqueName().toString(),
-						change.getParentEntity().getType().toString(),
-						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
-						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
-						change.getChangedEntity().getUniqueName().toString());
-				ChangeOperationDAO.insertChangeOperation(operation);
-			}
-		}
-		// System.out.println();
 	}
 
 	private GitRepository repository;
