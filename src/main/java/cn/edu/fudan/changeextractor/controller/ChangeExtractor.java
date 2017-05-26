@@ -74,10 +74,6 @@ public class ChangeExtractor {
 		String userDirPath = System.getProperty("user.dir");
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
 		File tempDir = new File(tempDirPath);
-		while (tempDir.exists()) {
-			tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
-			tempDir = new File(tempDirPath);
-		}
 		tempDir.mkdirs();
 
 		for (GitCommit gitCommit : commitList) {
@@ -114,40 +110,6 @@ public class ChangeExtractor {
 				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
 				if (changes != null) {
 					for (SourceCodeChange change : changes) {
-						// Structure entity in which the change operation
-						// happened,
-						// e.g., attribute, class, or method
-						// System.out.println("root entity type: " +
-						// change.getRootEntity().getType());
-						// System.out.println("root entity content: " +
-						// change.getRootEntity().getUniqueName());
-						// Source code entity that becomes the parent entity
-						// when the
-						// change is applied.
-						// System.out.println("parent entity type: " +
-						// change.getParentEntity().getType());
-						// System.out.println("parent entity content: " +
-						// change.getParentEntity().getUniqueName());
-						// Change Type
-						// System.out.println("change type: " +
-						// change.getChangeType());
-						// Significance level of the source code change
-						// System.out.println("significance level: " +
-						// change.getSignificanceLevel());
-						// Source code entity has been changed
-						// System.out.println("changed entity type: " +
-						// change.getChangedEntity().getType());
-						// System.out.println("changed entity content: " +
-						// change.getChangedEntity().getUniqueName());
-						// Associate entities
-						// List<SourceCodeEntity> entities =
-						// change.getChangedEntity().getAssociatedEntities();
-						// if (entities.size() > 0) {
-						// System.out.println("associate entities :");
-						// for (SourceCodeEntity entity : entities) {
-						// System.out.println(entity);
-						// }
-						// }
 						System.out.println();
 						ChangeOperation operation = new ChangeOperation(repository.getRepositoryId(), commitId,
 								filePath, change.getRootEntity().getType().toString(),
