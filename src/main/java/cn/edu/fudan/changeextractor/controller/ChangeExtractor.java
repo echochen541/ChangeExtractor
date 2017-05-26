@@ -7,16 +7,23 @@
 package cn.edu.fudan.changeextractor.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller;
 import ch.uzh.ifi.seal.changedistiller.ChangeDistiller.Language;
 import ch.uzh.ifi.seal.changedistiller.distilling.FileDistiller;
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
-import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeEntity;
+import cn.edu.fudan.changeextractor.dao.ChangeOperationMapper;
 import cn.edu.fudan.changeextractor.extractor.git.GitExtractor;
+import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
 import cn.edu.fudan.changeextractor.model.git.GitCommit;
 import cn.edu.fudan.changeextractor.model.git.GitRepository;
 import cn.edu.fudan.changeextractor.utils.FileUtils;
@@ -110,18 +117,28 @@ public class ChangeExtractor {
 						// Structure entity in which the change operation
 						// happened,
 						// e.g., attribute, class, or method
-						System.out.println("root entity type: " + change.getRootEntity().getType());
-						System.out.println("root entity: " + change.getRootEntity());
+						// System.out.println("root entity type: " +
+						// change.getRootEntity().getType());
+						// System.out.println("root entity content: " +
+						// change.getRootEntity().getUniqueName());
 						// Source code entity that becomes the parent entity
 						// when the
 						// change is applied.
-						System.out.println("parent entity: " + change.getParentEntity());
+						// System.out.println("parent entity type: " +
+						// change.getParentEntity().getType());
+						// System.out.println("parent entity content: " +
+						// change.getParentEntity().getUniqueName());
 						// Change Type
-						System.out.println("change type: " + change.getChangeType());
+						// System.out.println("change type: " +
+						// change.getChangeType());
 						// Significance level of the source code change
-						System.out.println("significance level: " + change.getSignificanceLevel());
+						// System.out.println("significance level: " +
+						// change.getSignificanceLevel());
 						// Source code entity has been changed
-						System.out.println("changed entity: " + change.getChangedEntity());
+						// System.out.println("changed entity type: " +
+						// change.getChangedEntity().getType());
+						// System.out.println("changed entity content: " +
+						// change.getChangedEntity().getUniqueName());
 						// Associate entities
 						// List<SourceCodeEntity> entities =
 						// change.getChangedEntity().getAssociatedEntities();
@@ -132,6 +149,28 @@ public class ChangeExtractor {
 						// }
 						// }
 						System.out.println();
+						ChangeOperation operation = new ChangeOperation(repository.getRepositoryId(), commitId,
+								filePath, change.getRootEntity().getType().toString(),
+								change.getRootEntity().getUniqueName().toString(),
+								change.getParentEntity().getType().toString(),
+								change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
+								change.getSignificanceLevel().toString(),
+								change.getChangedEntity().getType().toString(),
+								change.getChangedEntity().getUniqueName().toString());
+
+						SqlSessionFactory sessionFactory;
+						try {
+							sessionFactory = new SqlSessionFactoryBuilder()
+									.build(Resources.getResourceAsReader("mybatis-config.xml"));
+							SqlSession sqlSession = sessionFactory.openSession();
+							ChangeOperationMapper changeMapper = sqlSession.getMapper(ChangeOperationMapper.class);
+							changeMapper.insert(operation);
+							sqlSession.commit();
+							System.out.println(operation);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
 				System.out.println();
