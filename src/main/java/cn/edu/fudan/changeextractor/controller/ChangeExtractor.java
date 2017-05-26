@@ -28,12 +28,41 @@ import cn.edu.fudan.changeextractor.util.FileUtils;
  * @date: May 23, 2017 3:57:14 PM
  */
 public class ChangeExtractor {
+	/**
+	 * @Title: main
+	 * @Description: TODO
+	 * @param args
+	 * @return: void
+	 */
+	public static void main(String[] args) {
+		// input repository and commits
+		GitRepository gitRepository = new GitRepository(738, "weiciyuan", "D:/echo/workspace/git/big-code/weiciyuan");
+		List<GitCommit> commitList = new ArrayList<GitCommit>();
+		List<String> filePathList = new ArrayList<String>();
+
+		filePathList.add("src/org/qii/weiciyuan/support/lib/sinasso/SsoHandler.java");
+		commitList.add(new GitCommit("b8f4de854b12c4160a850c2217c779609c5eb445",
+				"733ac4f71adfd05f390fbe13d98b02875105b31c", new ArrayList<String>(filePathList)));
+
+		filePathList.clear();
+		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
+		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoActivity.java");
+		commitList.add(new GitCommit("90cc081f75458bb13a57ea0cde968331b2482284",
+				"0cc93ab7919af0468e83ead8122118fabdccbb73", new ArrayList<String>(filePathList)));
+
+		filePathList.clear();
+		filePathList.add("src/org/qii/weiciyuan/support/lib/BlurImageView.java");
+		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
+		commitList.add(new GitCommit("a4d53c57f88643f9c5d773d647d837b01fcbad21",
+				"739e934e4a257a35b82b0ad54131b59daa7ab39a", new ArrayList<String>(filePathList)));
+
+		ChangeExtractor changeExtractor = new ChangeExtractor(gitRepository, commitList);
+		changeExtractor.extracChange();
+	}
+
 	public void extracChange() {
 		int repositoryId = repository.getRepositoryId();
-		System.out.println(repositoryId);
-
 		GitExtractor gitExtractor = new GitExtractor(repository.getRepositoryPath());
-
 		// create temp directory to store files to be extracted
 		String userDirPath = System.getProperty("user.dir");
 		String tempDirPath = userDirPath + "/" + UUID.randomUUID().toString();
@@ -59,14 +88,14 @@ public class ChangeExtractor {
 				} catch (Exception e) {
 					System.err.println("Warning: error while change distilling. " + e.getMessage());
 				}
-				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
-				ChangeOperationDAO.insertChanges(changes, repository.getRepositoryId(), commitId, filePath);
-
+				
 				// delete temp files
 				left.delete();
 				right.delete();
+
+				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
+				ChangeOperationDAO.insertChanges(changes, repositoryId, commitId, filePath);
 			}
-			System.out.println();
 		}
 		// delete temp directory
 		tempDir.delete();
@@ -125,37 +154,5 @@ public class ChangeExtractor {
 	public ChangeExtractor(GitRepository repository, List<GitCommit> commitList) {
 		this.repository = repository;
 		this.commitList = commitList;
-	}
-
-	/**
-	 * @Title: main
-	 * @Description: TODO
-	 * @param args
-	 * @return: void
-	 */
-	public static void main(String[] args) {
-		// input repository and commits
-		GitRepository gitRepository = new GitRepository(738, "weiciyuan", "D:/echo/workspace/git/big-code/weiciyuan");
-		List<GitCommit> commitList = new ArrayList<GitCommit>();
-		List<String> filePathList = new ArrayList<String>();
-
-		filePathList.add("src/org/qii/weiciyuan/support/lib/sinasso/SsoHandler.java");
-		commitList.add(new GitCommit("b8f4de854b12c4160a850c2217c779609c5eb445",
-				"733ac4f71adfd05f390fbe13d98b02875105b31c", new ArrayList<String>(filePathList)));
-
-		filePathList.clear();
-		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
-		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoActivity.java");
-		commitList.add(new GitCommit("90cc081f75458bb13a57ea0cde968331b2482284",
-				"0cc93ab7919af0468e83ead8122118fabdccbb73", new ArrayList<String>(filePathList)));
-
-		filePathList.clear();
-		filePathList.add("src/org/qii/weiciyuan/support/lib/BlurImageView.java");
-		filePathList.add("src/org/qii/weiciyuan/ui/userinfo/UserInfoFragment.java");
-		commitList.add(new GitCommit("a4d53c57f88643f9c5d773d647d837b01fcbad21",
-				"739e934e4a257a35b82b0ad54131b59daa7ab39a", new ArrayList<String>(filePathList)));
-
-		ChangeExtractor changeExtractor = new ChangeExtractor(gitRepository, commitList);
-		changeExtractor.extracChange();
 	}
 }
