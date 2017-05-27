@@ -26,21 +26,18 @@ import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
 public class ChangeOperationDAO {
 	private static SqlSessionFactory sessionFactory;
 	private static Reader reader;
+	private static SqlSession sqlSession;
+	private static ChangeOperationMapper changeMapper;
+	
 	static {
 		try {
 			reader = Resources.getResourceAsReader("mybatis-config.xml");
 			sessionFactory = new SqlSessionFactoryBuilder().build(reader);
+			sqlSession = sessionFactory.openSession();
+			changeMapper = sqlSession.getMapper(ChangeOperationMapper.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void insertChangeOperation(ChangeOperation changeOperation) {
-		SqlSession sqlSession = sessionFactory.openSession();
-		ChangeOperationMapper changeMapper = sqlSession.getMapper(ChangeOperationMapper.class);
-		changeMapper.insert(changeOperation);
-		sqlSession.commit();
-		// System.out.println(changeOperation);
 	}
 
 	public static void insertChanges(List<SourceCodeChange> changes, int repositoryId, String commitId,
@@ -54,7 +51,8 @@ public class ChangeOperationDAO {
 						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
 						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
 						change.getChangedEntity().getUniqueName().toString());
-				ChangeOperationDAO.insertChangeOperation(operation);
+				changeMapper.insert(operation);
+				sqlSession.commit();
 			}
 		}
 	}
