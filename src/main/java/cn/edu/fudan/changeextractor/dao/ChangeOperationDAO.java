@@ -6,6 +6,7 @@
  */
 package cn.edu.fudan.changeextractor.dao;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ChangeOperationDAO {
 	private static Reader reader;
 	private static SqlSession sqlSession;
 	private static ChangeOperationMapper changeMapper;
-	
+
 	static {
 		try {
 			reader = Resources.getResourceAsReader("mybatis-config.xml");
