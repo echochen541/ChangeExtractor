@@ -96,4 +96,16 @@ public class GitRepository {
 	public void setRepositoryPath(String repositoryPath) {
 		this.repositoryPath = repositoryPath;
 	}
+
+	/* (non Javadoc) 
+	 * @Title: toString
+	 * @Description: TODO
+	 * @return 
+	 * @see java.lang.Object#toString() 
+	 */
+	@Override
+	public String toString() {
+		return "GitRepository [repositoryId=" + repositoryId + ", repositoryName=" + repositoryName
+				+ ", repositoryPath=" + repositoryPath + "]";
+	}
 }
