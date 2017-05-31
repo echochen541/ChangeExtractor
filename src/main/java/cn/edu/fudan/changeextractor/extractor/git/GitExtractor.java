@@ -8,8 +8,6 @@ package cn.edu.fudan.changeextractor.extractor.git;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;

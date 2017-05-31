@@ -42,7 +42,7 @@ public class GetDiffInfoFromDB {
 				if (parent.size() == 1) {
 					ResultSet resultSet3 = statement
 							.executeQuery("select file_name from changefile where commit_id = \"" + commit_id + "\""
-									+ "and repository_id = " + repo_id + "and type = 'MODIFY'");
+									+ "and repository_id = " + repo_id + "and type = MODIFY");
 					ArrayList<String> file_names = new ArrayList<>();
 					while (resultSet3.next()) {
 						String fileName = resultSet3.getString("file_name");

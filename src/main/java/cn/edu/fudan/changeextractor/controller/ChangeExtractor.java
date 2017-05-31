@@ -62,6 +62,7 @@ public class ChangeExtractor {
 
 	public void extracChange() {
 		int repositoryId = repository.getRepositoryId();
+		System.out.println(repositoryId);
 		GitExtractor gitExtractor = new GitExtractor(repository.getRepositoryPath());
 		// create temp directory to store files to be extracted
 		String userDirPath = System.getProperty("user.dir");
@@ -96,9 +97,11 @@ public class ChangeExtractor {
 				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
 				ChangeOperationDAO.insertChanges(changes, repositoryId, commitId, filePath);
 			}
+			System.out.println();
 		}
 		// delete temp directory
 		tempDir.delete();
+		System.out.println();
 	}
 
 	private GitRepository repository;

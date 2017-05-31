@@ -36,7 +36,7 @@ public class ChangeOperationDAO {
 			sessionFactory = new SqlSessionFactoryBuilder().build(reader);
 			sqlSession = sessionFactory.openSession();
 			changeMapper = sqlSession.getMapper(ChangeOperationMapper.class);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
