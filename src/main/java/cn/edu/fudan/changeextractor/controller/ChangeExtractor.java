@@ -84,7 +84,7 @@ public class ChangeExtractor {
 				List<SourceCodeChange> changes = distiller.getSourceCodeChanges();
 				ChangeOperationDAO.insertChanges(changes, repositoryId, commitId, filePath);
 			}
-			System.out.println();
+			// System.out.println();
 		}
 		// delete temp directory
 		tempDir.delete();
