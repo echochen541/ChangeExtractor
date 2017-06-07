@@ -51,7 +51,10 @@ public class ChangeOperationDAO {
 						change.getParentEntity().getType().toString(),
 						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
 						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
-						change.getChangedEntity().getUniqueName().toString());
+						change.getChangedEntity().getUniqueName().toString().replaceAll(
+								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
+								"*"));
+				// System.out.println(operation.toString());
 				changeMapper.insert(operation);
 				sqlSession.commit();
 			}

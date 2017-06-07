@@ -23,11 +23,13 @@ public class Main {
 	public static void main(String[] args) {
 		GetDiffInfoFromDB getDiffInfoFromDB = new GetDiffInfoFromDB();
 		ArrayList<GitRepository> repositories = getDiffInfoFromDB.GetRepoInfo();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < repositories.size(); i++) {
 			GitRepository repository = repositories.get(i);
+			// String repositoryPath = repository.getRepositoryPath();
+			// repository.setRepositoryPath("D:" + repositoryPath);
 			int repositoryId = repository.getRepositoryId();
 			ArrayList<GitCommit> commits = getDiffInfoFromDB.GetCommitInfo(repositoryId);
-			System.out.println(repository);
+			// System.out.println(repository);
 			ChangeExtractor changeExtractor = new ChangeExtractor(repository, commits);
 			changeExtractor.extracChange();
 		}
