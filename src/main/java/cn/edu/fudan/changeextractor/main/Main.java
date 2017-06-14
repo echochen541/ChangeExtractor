@@ -28,10 +28,12 @@ public class Main {
 			// String repositoryPath = repository.getRepositoryPath();
 			// repository.setRepositoryPath("D:" + repositoryPath);
 			int repositoryId = repository.getRepositoryId();
-			ArrayList<GitCommit> commits = getDiffInfoFromDB.GetCommitInfo(repositoryId);
-			// System.out.println(repository);
-			ChangeExtractor changeExtractor = new ChangeExtractor(repository, commits);
-			changeExtractor.extracChange();
+			if (repositoryId >= 2554) {
+				ArrayList<GitCommit> commits = getDiffInfoFromDB.GetCommitInfo(repositoryId);
+				// System.out.println(repository);
+				ChangeExtractor changeExtractor = new ChangeExtractor(repository, commits);
+				changeExtractor.extracChange();
+			}
 		}
 		System.out.println("finish!");
 	}
