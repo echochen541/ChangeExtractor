@@ -47,10 +47,16 @@ public class ChangeOperationDAO {
 			for (SourceCodeChange change : changes) {
 				// System.out.println();
 				ChangeOperation operation = new ChangeOperation(repositoryId, commitId, filePath,
-						change.getRootEntity().getType().toString(), change.getRootEntity().getUniqueName().toString(),
+						change.getRootEntity().getType().toString(),
+						change.getRootEntity().getUniqueName().toString().replaceAll(
+								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
+								"*"),
 						change.getParentEntity().getType().toString(),
-						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
-						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
+						change.getParentEntity().getUniqueName().toString().replaceAll(
+								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
+								"*"),
+						change.getChangeType().toString(), change.getSignificanceLevel().toString(),
+						change.getChangedEntity().getType().toString(),
 						change.getChangedEntity().getUniqueName().toString().replaceAll(
 								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
 								"*"));

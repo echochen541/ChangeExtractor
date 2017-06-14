@@ -25,12 +25,12 @@ public class GetDiffInfoFromDB {
 	}
 
 	public ArrayList<GitCommit> GetCommitInfo(int repo_id) {
-		ArrayList<GitCommit> ret = new ArrayList<>();
+		ArrayList<GitCommit> ret = new ArrayList<GitCommit>();
 		try {
 			ResultSet resultSet3 = stmt.executeQuery("select commit_id from changefile where repository_id =  "
 					+ repo_id + " and type = 'MODIFY' GROUP BY commit_id ORDER BY commit_id");
 
-			ArrayList<String> commit_ids = new ArrayList<>();
+			ArrayList<String> commit_ids = new ArrayList<String>();
 			while (resultSet3.next()) {
 				String commit_id = resultSet3.getString("commit_id");
 
@@ -38,7 +38,7 @@ public class GetDiffInfoFromDB {
 				ResultSet resultSet2 = statement.executeQuery("select parent_id from commitparent where commit_id = \""
 						+ commit_id + "\"" + "and repository_id = " + repo_id);
 
-				ArrayList<String> parent = new ArrayList<>();
+				ArrayList<String> parent = new ArrayList<String>();
 				while (resultSet2.next()) {
 					parent.add(resultSet2.getString("parent_id"));
 				}
@@ -110,7 +110,7 @@ public class GetDiffInfoFromDB {
 	}
 
 	public ArrayList<GitRepository> GetRepoInfo() {
-		ArrayList<GitRepository> ret = new ArrayList<>();
+		ArrayList<GitRepository> ret = new ArrayList<GitRepository>();
 		try {
 			ResultSet resultSet = stmt
 					.executeQuery("select repository_id,repository_name,local_address from repository");

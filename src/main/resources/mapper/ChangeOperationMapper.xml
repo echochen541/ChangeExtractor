@@ -11,7 +11,7 @@
     <result column="commit_id" jdbcType="VARCHAR" property="commitId" />
     <result column="file_name" jdbcType="VARCHAR" property="fileName" />
     <result column="root_entity_type" jdbcType="VARCHAR" property="rootEntityType" />
-    <result column="root_entiry_content" jdbcType="VARCHAR" property="rootEntiryContent" />
+    <result column="root_entity_content" jdbcType="VARCHAR" property="rootEntiryContent" />
     <result column="parent_entity_type" jdbcType="VARCHAR" property="parentEntityType" />
     <result column="parent_entity_content" jdbcType="VARCHAR" property="parentEntityContent" />
     <result column="change_type" jdbcType="VARCHAR" property="changeType" />
