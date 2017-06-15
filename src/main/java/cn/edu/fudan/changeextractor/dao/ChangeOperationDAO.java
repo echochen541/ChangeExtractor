@@ -16,7 +16,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import ch.uzh.ifi.seal.changedistiller.model.entities.SourceCodeChange;
-import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
+import cn.edu.fudan.changeextractor.model.db.ChangeOperationWithBLOBs;
 
 /**
  * @ClassName: ChangeOperationDao
@@ -46,15 +46,19 @@ public class ChangeOperationDAO {
 		if (changes != null) {
 			for (SourceCodeChange change : changes) {
 				// System.out.println();
-				ChangeOperation operation = new ChangeOperation(repositoryId, commitId, filePath,
-						change.getRootEntity().getType().toString(), change.getRootEntity().getUniqueName().toString(),
-						change.getParentEntity().getType().toString(),
-						change.getParentEntity().getUniqueName().toString(), change.getChangeType().toString(),
-						change.getSignificanceLevel().toString(), change.getChangedEntity().getType().toString(),
+				ChangeOperationWithBLOBs operation = new ChangeOperationWithBLOBs(0, repositoryId, commitId, filePath,
+						change.getRootEntity().getType().toString(), change.getParentEntity().getType().toString(),
+						change.getChangeType().toString(), change.getSignificanceLevel().toString(),
+						change.getChangedEntity().getType().toString(),
+						change.getRootEntity().getUniqueName().toString().replaceAll(
+								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
+								"*"),
+						change.getParentEntity().getUniqueName().toString().replaceAll(
+								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
+								"*"),
 						change.getChangedEntity().getUniqueName().toString().replaceAll(
 								"[\\ud83c\\udc00-\\ud83c\\udfff]|[\\ud83d\\udc00-\\ud83d\\udfff]|[\\u2600-\\u27ff]",
 								"*"));
-				// System.out.println(operation.toString());
 				changeMapper.insert(operation);
 				sqlSession.commit();
 			}

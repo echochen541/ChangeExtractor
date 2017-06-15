@@ -18,7 +18,7 @@
 		</commentGenerator>
 		<!--数据库链接URL，用户名、密码 -->
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://127.0.0.1:3306/fdroid?characterEncoding=UTF-8"
+			connectionURL="jdbc:mysql://localhost:3306/fdroid?characterEncoding=UTF-8"
 			userId="root" password="root">
 		</jdbcConnection>
 		<javaTypeResolver>
@@ -29,6 +29,8 @@
 		<!-- 生成模型的包名和位置 -->
 		<javaModelGenerator targetPackage="cn.edu.fudan.changeextractor.model.db"
 			targetProject="src/main/java">
+			<!-- 是否对model添加 构造函数 -->
+            <property name="constructorBased" value="true"/>
 			<property name="enableSubPackages" value="true" />
 			<property name="trimStrings" value="true" />
 		</javaModelGenerator>
