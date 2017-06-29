@@ -25,15 +25,16 @@ public class Main {
 		ArrayList<GitRepository> repositories = getDiffInfoFromDB.GetRepoInfo();
 		for (int i = 0; i < repositories.size(); i++) {
 			GitRepository repository = repositories.get(i);
-			// String repositoryPath = repository.getRepositoryPath();
-			// repository.setRepositoryPath("D:" + repositoryPath);
 			int repositoryId = repository.getRepositoryId();
-			// if (repositoryId >= 2554) {
 			ArrayList<GitCommit> commits = getDiffInfoFromDB.GetCommitInfo(repositoryId);
-			// System.out.println(repository);
-			ChangeExtractor changeExtractor = new ChangeExtractor(repository, commits);
-			changeExtractor.extracChange();
-			// }
+			System.out.println(repository);
+			for (GitCommit commit : commits) {
+				System.out.println(commit);
+			}
+			System.out.println();
+			// ChangeExtractor changeExtractor = new ChangeExtractor(repository,
+			// commits);
+			// changeExtractor.extracChange();
 		}
 		System.out.println("finish!");
 	}

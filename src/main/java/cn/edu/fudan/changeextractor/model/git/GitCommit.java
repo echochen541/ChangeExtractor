@@ -52,4 +52,10 @@ public class GitCommit {
 	public void setFilePathList(List<String> filePathList) {
 		this.filePathList = filePathList;
 	}
+
+	@Override
+	public String toString() {
+		return "GitCommit [commitId=" + commitId + ", parentCommitId=" + parentCommitId + ", filePathList="
+				+ filePathList + "]";
+	}
 }
