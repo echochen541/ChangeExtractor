@@ -14,7 +14,7 @@
 			<transactionManager type="jdbc" />
 			<dataSource type="POOLED">
 				<property name="driver" value="com.mysql.jdbc.Driver" />
-				<property name="url" value="jdbc:mysql://10.131.252.156:3306/fdroid" />
+				<property name="url" value="jdbc:mysql://localhost:3306/co-change" />
 				<property name="username" value="root" />
 				<property name="password" value="root" />
 			</dataSource>
