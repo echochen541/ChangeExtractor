@@ -27,14 +27,8 @@ public class Main {
 			GitRepository repository = repositories.get(i);
 			int repositoryId = repository.getRepositoryId();
 			ArrayList<GitCommit> commits = getDiffInfoFromDB.GetCommitInfo(repositoryId);
-			System.out.println(repository);
-			for (GitCommit commit : commits) {
-				System.out.println(commit);
-			}
-			System.out.println();
-			// ChangeExtractor changeExtractor = new ChangeExtractor(repository,
-			// commits);
-			// changeExtractor.extracChange();
+			ChangeExtractor changeExtractor = new ChangeExtractor(repository, commits);
+			changeExtractor.extracChange();
 		}
 		System.out.println("finish!");
 	}
