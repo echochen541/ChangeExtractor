@@ -47,6 +47,12 @@ public class ChangeOperationDAO {
 			for (SourceCodeChange change : changes) {
 				// System.out.println();
 
+				// if update, store new entity content
+				// if (change instanceof Update) {
+				// Update update = (Update) change;
+				// newEntity = update.getNewEntity().getUniqueName();
+				// }
+
 				ChangeOperationWithBLOBs operation = new ChangeOperationWithBLOBs(0, repositoryId, commitId, filePath,
 						change.getRootEntity().getType().toString(), change.getParentEntity().getType().toString(),
 						change.getChangeType().toString(), change.getSignificanceLevel().toString(),
