@@ -1,5 +1,7 @@
 package cn.edu.fudan.changeextractor.dao;
 
+import java.util.List;
+
 import cn.edu.fudan.changeextractor.model.db.ChangeOperation;
 import cn.edu.fudan.changeextractor.model.db.ChangeOperationWithBLOBs;
 
@@ -59,4 +61,6 @@ public interface ChangeOperationMapper {
      * @mbg.generated
      */
     int updateByPrimaryKey(ChangeOperation record);
+
+	int insertBatch(List<ChangeOperationWithBLOBs> operations);
 }
