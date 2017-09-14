@@ -32,7 +32,7 @@ CREATE TABLE `change_operation` (
   `significance_level` varchar(1000) DEFAULT NULL,
   `changed_entity_type` varchar(1000) DEFAULT NULL,
   `changed_entity_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `new_entity_content` longtext,
+  `new_entity_content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   PRIMARY KEY (`change_operation_id`),
   KEY `change_operation_fk1` (`repository_id`),
   KEY `change_operation_fk2` (`commit_id`),
